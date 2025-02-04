@@ -7,7 +7,7 @@ members = [
     "sqlx-data-parser",
     "sqlx-data-integration",
     # Integration tests - not published to crates.io
-    "test-integration-sqlite",
+    # "test-integration-sqlite",
     #"test-integration-mysql",
     # "test-integration-postgresql",
 ]
@@ -23,8 +23,8 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Jose Carmo <jose.rcarmo@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/jose.rcarmo/sqlx-data"
-homepage = "https://github.com/jose.rcarmo/sqlx-data"
+repository = "https://github.com/josercarmo/sqlx-data"
+homepage = "https://github.com/josercarmo/sqlx-data"
 documentation = "https://docs.rs/sqlx-data"
 description = "An advanced SQLx companion implementing the Repository Pattern with compile-time type safety. Features boilerplate-free parameter binding, sophisticated pagination (Serial/Slice/Cursor), query aliases, scopes, batch operations, and streaming support for modern Rust applications."
 keywords = ["sqlx", "repository", "orm", "macros", "pagination"]
@@ -47,11 +47,11 @@ dashmap = "6.1"
 ahash = "0.8"
 futures = { version = "0.3" }
 thiserror = "2.0.17"
-sqlx-data = { path = "sqlx-data" }
-sqlx-data-params = { path = "sqlx-data-params" }
-sqlx-data-parser = { path = "sqlx-data-parser" }
-sqlx-data-macros = { path = "sqlx-data-macros" }
-sqlx-data-integration = { path = "sqlx-data-integration" }
+sqlx-data = { version = "0.1.0", path = "sqlx-data" }
+sqlx-data-params = { version = "0.1.0", path = "sqlx-data-params" }
+sqlx-data-parser = { version = "0.1.0", path = "sqlx-data-parser" }
+sqlx-data-macros = { version = "0.1.0", path = "sqlx-data-macros" }
+sqlx-data-integration = { version = "0.1.0", path = "sqlx-data-integration" }
 
 
 # Dev dependencies
