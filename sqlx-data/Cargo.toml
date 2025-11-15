@@ -1,0 +1,49 @@
+[package]
+name = "sqlx-data"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+keywords.workspace = true
+categories = ["database", "development-tools::procedural-macro-helpers"]
+
+[dependencies]
+sqlx-data-params = { workspace = true }
+sqlx-data-macros = { workspace = true }
+sqlx-data-parser = { workspace = true }
+sqlx-data-integration = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+bytes = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
+
+[features]
+default = []
+sqlite = [ "sqlx-data-parser/sqlite", "sqlx-data-macros/sqlite", "sqlx-data-params/sqlite"]
+postgres = [ "sqlx-data-parser/postgres", "sqlx-data-macros/postgres", "sqlx-data-params/postgres"]
+mysql = ["sqlx-data-parser/mysql", "sqlx-data-macros/mysql", "sqlx-data-params/mysql"]
+tracing = [ "sqlx-data-macros/tracing"]
+chrono = [ "sqlx-data-macros/chrono", "sqlx-data-params/chrono"]
+time = [ "sqlx-data-macros/time", "sqlx-data-parser/json", "sqlx-data-params/time"]
+json = ["sqlx-data-macros/json", "sqlx-data-parser/json", "sqlx-data-params/json"]
+uuid = [ "sqlx-data-macros/uuid", "sqlx-data-params/uuid"]
+bigdecimal = [ "sqlx-data-macros/bigdecimal", "sqlx-data-params/bigdecimal"]
+rust_decimal = [ "sqlx-data-macros/rust_decimal", "sqlx-data-params/rust_decimal"]
+ipnet = [ "sqlx-data-macros/ipnet", "sqlx-data-params/ipnet"]
+ipnetwork = [ "sqlx-data-macros/ipnetwork", "sqlx-data-params/ipnetwork"]
+bit-vec = [ "sqlx-data-macros/bit-vec", "sqlx-data-params/bit-vec"]
+mac_address = [ "sqlx-data-macros/mac_address", "sqlx-data-params/mac_address"]
+tls-native = ["sqlx-data-macros/tls-native-tls"]
+tls-rustls = ["sqlx-data-macros/tls-rustls"]
+
+[package.metadata.cargo-machete]
+ignored = ["sqlx-data-parser"]
+
+[package.metadata.deny.trybuild]
+chrono.conflicts_with = ["time"]
+time.conflicts_with = ["chrono"]
