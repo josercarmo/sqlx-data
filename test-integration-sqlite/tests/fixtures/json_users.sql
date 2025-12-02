@@ -1,0 +1,5 @@
+INSERT INTO json_users (name, profile_json, preferences) VALUES
+('Alice Johnson', '{"email": "alice@example.com", "age": 30, "department": "Engineering", "skills": ["Rust", "Python", "SQL"], "active": true}', '{"theme": "dark", "notifications": true, "language": "en"}'),
+('Bob Smith', '{"email": "bob@example.com", "age": 25, "department": "Marketing", "skills": ["JavaScript", "React"], "active": true}', '{"theme": "light", "notifications": false}'),
+('Carol Davis', '{"email": "carol@example.com", "age": 35, "department": "Engineering", "skills": ["Go", "Kubernetes", "Docker"], "active": false, "toDelete": true}', NULL),
+('David Wilson', '{"email": "david@example.com", "age": 28, "department": "Sales", "skills": ["Communication", "CRM"], "active": true}', '{"theme": "auto", "notifications": true, "language": "es"}');
