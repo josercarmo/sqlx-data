@@ -1,0 +1,5 @@
+INSERT INTO json_users (name, profile_json, preferences) VALUES
+('Alice Johnson', JSON_OBJECT('email', 'alice@example.com', 'age', 30, 'department', 'Engineering', 'skills', JSON_ARRAY('Rust', 'Python', 'SQL'), 'active', true, 'city', 'Seattle'), JSON_OBJECT('theme', 'dark', 'notifications', true, 'language', 'en')),
+('Bob Smith', JSON_OBJECT('email', 'bob@example.com', 'age', 25, 'department', 'Marketing', 'skills', JSON_ARRAY('JavaScript', 'React'), 'active', true, 'city', 'Portland'), JSON_OBJECT('theme', 'light', 'notifications', false)),
+('Carol Davis', JSON_OBJECT('email', 'carol@example.com', 'age', 35, 'department', 'Engineering', 'skills', JSON_ARRAY('Go', 'Kubernetes', 'Docker'), 'active', false, 'toDelete', true, 'city', 'Denver'), NULL),
+('David Wilson', JSON_OBJECT('email', 'david@example.com', 'age', 28, 'department', 'Sales', 'skills', JSON_ARRAY('Communication', 'CRM'), 'active', true, 'city', 'Phoenix'), JSON_OBJECT('theme', 'auto', 'notifications', true, 'language', 'es'));

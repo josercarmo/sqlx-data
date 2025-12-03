@@ -1,0 +1,41 @@
+[package]
+name = "test-integration-mysql"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[dev-dependencies]
+sqlx = { workspace = true, features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "mysql",
+    "derive",
+    "macros",
+    "migrate",
+] }
+sqlx-data = { workspace = true, features = [
+    "mysql",
+    "json",
+    "tracing",
+    "bigdecimal",
+    "uuid",
+    "time",
+] }
+futures = { workspace = true }
+tokio = { workspace = true }
+tempfile = { workspace = true }
+bytes = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
+base64 = { workspace = true, default-features = true }
+
+[features]
+chrono = []
+time = []
+json = []
+uuid = []

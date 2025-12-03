@@ -1,0 +1,240 @@
+use sqlx_data::{FilterValue, ParamsBuilder, build_dynamic_sql};
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_cursor_only_single_field() {
+        let sql = "SELECT * FROM users";
+        #[rustfmt::skip]
+        let params = ParamsBuilder::new()
+            .cursor()
+                .after(FilterValue::Int(100))
+                .done()
+            .sort()
+                .asc("id")
+                .done()
+            .limit(10)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE id > ?"));
+        assert!(!result_sql.contains("("));
+        assert!(!result_sql.contains(")"));
+        assert!(result_sql.contains("ORDER BY id ASC"));
+        assert!(result_sql.contains("LIMIT 11"));
+        assert_eq!(built.bind_values.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_only_multi_field() {
+        let sql = "SELECT * FROM users";
+        let params = ParamsBuilder::new()
+            .sort()
+            .desc("created_at")
+            .asc("id")
+            .done()
+            .cursor()
+            .after(FilterValue::String("2024-01-01".into()))
+            .and_field(FilterValue::Int(50))
+            .done()
+            .limit(5)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE"));
+        assert!(result_sql.contains("created_at < ?"));
+        assert!(result_sql.contains("OR"));
+        assert!(result_sql.contains("created_at = ? AND id > ?"));
+        assert!(result_sql.contains("ORDER BY created_at DESC, id ASC"));
+        assert!(result_sql.contains("LIMIT 6"));
+        assert_eq!(built.bind_values.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_before_direction() {
+        let sql = "SELECT * FROM products";
+        let params = ParamsBuilder::new()
+            .sort()
+            .asc("price")
+            .done()
+            .cursor()
+            .before(FilterValue::Float(99.99))
+            .done()
+            .limit(20)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE price < ?"));
+        assert!(result_sql.contains("ORDER BY price DESC"));
+        assert!(result_sql.contains("LIMIT 21")); // limit + 1 for cursor pagination
+        assert!(!result_sql.contains("("));
+        assert!(!result_sql.contains(")"));
+        assert_eq!(built.bind_values.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_before_multi_field() {
+        let sql = "SELECT * FROM orders";
+        let params = ParamsBuilder::new()
+            .sort()
+            .desc("order_date")
+            .desc("id")
+            .done()
+            .cursor()
+            .before(FilterValue::String("2024-06-01".into()))
+            .and_field(FilterValue::Int(1000))
+            .done()
+            .limit(15)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE"));
+        assert!(result_sql.contains("order_date > ?"));
+        assert!(result_sql.contains("OR"));
+        assert!(result_sql.contains("order_date = ? AND id > ?"));
+        assert!(result_sql.contains("ORDER BY order_date ASC, id ASC"));
+        assert!(result_sql.contains("LIMIT 16")); // limit + 1 for cursor pagination
+        assert_eq!(built.bind_values.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_with_existing_where_no_extra_conditions() {
+        let sql = "SELECT * FROM users WHERE active = true";
+        let params = ParamsBuilder::new()
+            .sort()
+            .asc("name")
+            .done()
+            .cursor()
+            .after(FilterValue::String("John".into()))
+            .done()
+            .limit(25)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE active = true AND name > ?"));
+        assert!(result_sql.contains("ORDER BY name ASC"));
+        assert!(result_sql.contains("LIMIT 26")); // limit + 1 for cursor pagination
+        assert_eq!(built.bind_values.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_complex_existing_where() {
+        let sql = "SELECT * FROM posts WHERE (status = 'published' OR status = 'featured') AND category_id = 5";
+        let params = ParamsBuilder::new()
+            .sort()
+            .desc("published_at")
+            .asc("id")
+            .done()
+            .cursor()
+            .after(FilterValue::String("2024-01-15T10:00:00Z".into()))
+            .and_field(FilterValue::Int(42))
+            .done()
+            .limit(30)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("(status = 'published' OR status = 'featured')"));
+        assert!(result_sql.contains("category_id = 5"));
+        assert!(result_sql.contains("published_at < ?"));
+        assert!(result_sql.contains("published_at = ? AND id > ?"));
+        assert!(result_sql.contains("ORDER BY published_at DESC, id ASC"));
+        assert!(result_sql.contains("LIMIT 31")); // limit + 1 for cursor pagination
+        assert_eq!(built.bind_values.len(), 3);
+
+        assert!(result_sql.contains("(published_at < ? OR (published_at = ? AND id > ?))"));
+    }
+
+    #[tokio::test]
+    async fn test_cursor_three_fields() {
+        let sql = "SELECT * FROM events";
+        let params = ParamsBuilder::new()
+            .sort()
+            .desc("priority")
+            .asc("created_at")
+            .asc("id")
+            .done()
+            .cursor()
+            .after(FilterValue::Int(5))
+            .and_field(FilterValue::String("2024-03-01T00:00:00Z".into()))
+            .and_field(FilterValue::Int(123))
+            .done()
+            .limit(10)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("priority < ?"));
+        assert!(result_sql.contains("priority = ?"));
+        assert!(result_sql.contains("created_at > ?"));
+        assert!(result_sql.contains("created_at = ?"));
+        assert!(result_sql.contains("id > ?"));
+        assert!(result_sql.contains("ORDER BY priority DESC, created_at ASC, id ASC"));
+        assert!(result_sql.contains("LIMIT 11")); // limit + 1 for cursor pagination
+        assert_eq!(built.bind_values.len(), 5);
+
+        assert!(result_sql.contains("OR"));
+        assert!(result_sql.contains("AND"));
+    }
+
+    #[tokio::test]
+    async fn test_cursor_edge_case_single_desc() {
+        let sql = "SELECT * FROM logs";
+        let params = ParamsBuilder::new()
+            .sort()
+            .desc("timestamp")
+            .done()
+            .cursor()
+            .after(FilterValue::String("2024-12-01T12:00:00Z".into()))
+            .done()
+            .limit(100)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE timestamp < ?"));
+        assert!(result_sql.contains("ORDER BY timestamp DESC"));
+        assert!(result_sql.contains("LIMIT 101")); // limit + 1 for cursor pagination
+        assert!(!result_sql.contains("("));
+        assert!(!result_sql.contains(")"));
+        assert_eq!(built.bind_values.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_cursor_nulls_handling() {
+        let sql = "SELECT * FROM comments";
+        let params = ParamsBuilder::new()
+            .sort()
+            .asc("rating")
+            .nulls_first()
+            .done()
+            .cursor()
+            .after(FilterValue::Int(3))
+            .done()
+            .limit(50)
+            .build();
+
+        let built = build_dynamic_sql(sql, &params, vec![]).unwrap();
+        let result_sql = built.sql.as_ref();
+
+        assert!(result_sql.contains("WHERE rating > ?"));
+        assert!(result_sql.contains("ORDER BY rating ASC NULLS FIRST"));
+        assert!(result_sql.contains("LIMIT 51")); // limit + 1 for cursor pagination
+        assert_eq!(built.bind_values.len(), 1);
+    }
+}
