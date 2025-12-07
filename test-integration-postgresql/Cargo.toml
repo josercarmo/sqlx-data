@@ -1,0 +1,37 @@
+[package]
+name = "test-integration-postgresql"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description.workspace = true
+
+[dependencies]
+# tracing chrono time json uuid bigdecimal ipnet ipnetwork bit_vec mac_address
+
+[dev-dependencies]
+sqlx = { workspace = true, features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "derive",
+    "macros",
+    "migrate",
+] }
+sqlx-data = { workspace = true, features = ["postgres", "tracing","json","chrono","bigdecimal","mac_address","uuid"] }
+futures = { workspace = true }
+tokio = { workspace = true }
+tempfile = { workspace = true }
+bytes = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "env-filter"] }
+base64 = { workspace = true, default-features = true }
+
+[features]
+chrono = []
+time= []
+json = []
+uuid = []
