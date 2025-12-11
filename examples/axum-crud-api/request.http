@@ -1,0 +1,63 @@
+// requests.http
+@baseUrl = http://localhost:8000
+
+### 1. Test Root Endpoint (Health Check)
+GET {{baseUrl}}/
+
+### 2. Get All Users (Should be empty initially)
+GET {{baseUrl}}/users
+
+### 3. Create User 1
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "Alice Smith",
+    "email": "alice@example.com"
+}
+
+### 4. Create User 2
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "Bob Jones",
+    "email": "bob@example.com"
+}
+
+### 5. Create User 3
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "Charlie Day",
+    "email": "charlie@example.com"
+}
+
+### 6. Get All Users (Should see 3 users now)
+GET {{baseUrl}}/users
+
+### 7. Get Single User (Assuming ID 1 exists)
+GET {{baseUrl}}/users/1
+
+### 8. Get User that does not exist (Test 404)
+GET {{baseUrl}}/users/9999
+
+### 9. Update User 2
+# Note: Ensure your backend handles PUT or PATCH for updates
+PUT {{baseUrl}}/users/2
+Content-Type: application/json
+
+{
+    "name": "Bob James",
+    "email": "bobjames@example.com"
+}
+
+### 10. Get All Users (Verify Update)
+GET {{baseUrl}}/users
+
+### 11. Delete User 2
+DELETE {{baseUrl}}/users/3
+
+### 12. Get All Users (Final check - Bob should be gone)
+GET {{baseUrl}}/users
