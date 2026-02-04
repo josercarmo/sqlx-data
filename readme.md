@@ -527,12 +527,34 @@ let users = vec![
 repo.insert_batch(users).await?;
 ```
 
+**Generated Code:**
+```rust
+// The macro generates this optimized batch insert method:
+async fn insert_batch_query(&self, rows: Vec<(String, String, u8)>) -> Result<QueryResult> {
+    if rows.is_empty() {
+        return Ok(QueryResult::default());
+    }
+
+    // Uses SQLx's efficient QueryBuilder with push_values
+    let mut qb = sqlx::QueryBuilder::new("INSERT INTO users (name, email, age) ");
+    qb.push_values(rows, |mut b, tuple| {
+        b.push_bind(tuple.0)    // name
+         .push_bind(tuple.1)    // email
+         .push_bind(tuple.2);   // age
+    });
+
+    qb.build().execute(self.get_pool()).await
+}
+```
+
 **Performance:** Inserts 1000 rows in ~50ms vs ~2000ms with individual inserts
 
 ---
 
 ### Streaming
 Best for: Large datasets, memory efficiency
+
+Uses SQLx's native [`fetch`](https://docs.rs/sqlx/latest/sqlx/query/struct.QueryAs.html#method.fetch) method for zero-overhead row-by-row processing, keeping memory usage constant regardless of result set size.
 
 ```rust
 use futures::Stream;

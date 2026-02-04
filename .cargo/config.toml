@@ -1,0 +1,7 @@
+[build]
+rustflags = [
+    "-W", "clippy::unwrap_used",
+    "-W", "clippy::expect_used",
+    "-W", "clippy::panic",
+    "-W", "clippy::unreachable",
+]
