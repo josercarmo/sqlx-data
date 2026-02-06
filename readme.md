@@ -153,17 +153,17 @@ SQLx-Data uses feature flags to enable database and type support. **You must spe
 ```toml
 # For SQLite with JSON
 [dependencies]
-sqlx-data = { version = "0.1.4", features = ["sqlite", "json"] }
+sqlx-data = { version = "0.1.5", features = ["sqlite", "json"] }
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "macros", "migrate"] }
 
 # For PostgreSQL with multiple types
 [dependencies]
-sqlx-data = { version = "0.1.4", features = ["postgres", "json", "chrono", "uuid"] }
+sqlx-data = { version = "0.1.5", features = ["postgres", "json", "chrono", "uuid"] }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "macros", "migrate"] }
 
 # For MySQL with tracing
 [dependencies]
-sqlx-data = { version = "0.1.4", features = ["mysql", "json", "tracing"] }
+sqlx-data = { version = "0.1.5", features = ["mysql", "json", "tracing"] }
 sqlx = { version = "0.8", features = ["mysql", "runtime-tokio", "macros", "migrate"] }
 ```
 
@@ -173,7 +173,7 @@ sqlx = { version = "0.8", features = ["mysql", "runtime-tokio", "macros", "migra
 
 ```toml
 [dependencies]
-sqlx-data = { version = "0.1.4", features = ["sqlite","json"] }
+sqlx-data = { version = "0.1.5", features = ["sqlite","json"] }
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio"] }
 tokio = { version = "1", features = ["full"] }
 ```
@@ -436,15 +436,6 @@ trait UserRepo {
 }
 ```
 
-**Benefits:**
-- 🔍 **Readable**: Parameter names explain their purpose in the query
-- 🔄 **Flexible Order**: Function parameters can be in any order
-- ♻️ **Reusable**: Same parameter used multiple times without repetition
-- 🔗 **Compatible**: Works with existing positional parameter code
-- 🛡️ **Type Safe**: Same compile-time verification as positional parameters
-
----
-
 ## Aliases
 
 Reusable SQL fragments for DRY code:
@@ -614,9 +605,9 @@ Bypass compile-time verification for complex queries or DDL:
 ```rust
 #[repo]
 trait AdminRepo {
-    // Use 'unchecked' to skip SQL validation
-    #[dml("CREATE TABLE IF NOT EXISTS logs (id INT)", unchecked)]
-    async fn create_table(&self) -> Result<QueryResult>;
+    // Use 'unchecked' to skip SQL validation for dynamic queries
+    #[dml("SELECT * FROM information_schema.tables WHERE table_name = ?", unchecked)]
+    async fn check_table_exists(&self, table_name: String) -> Result<Vec<String>>;
 
     #[dml("SELECT * FROM users WHERE id = " + "1", unchecked)]
     async fn dynamic_query(&self) -> Result<Vec<User>>;
@@ -672,7 +663,7 @@ trait GenericRepo {
 
 ### Method Variants
 
-Generate multiple executor variants automatically:
+Generate multiple executor variants automatically, or pass executors directly as parameters:
 
 ```rust
 #[repo]
@@ -694,6 +685,37 @@ let mut tx = pool.begin().await?;
 repo.update_name_with_tx(&mut tx, "Alice".into(), 1).await?;
 repo.update_name_with_tx(&mut tx, "Bob".into(), 2).await?;
 tx.commit().await?;
+```
+
+**Alternative: Direct Executor Parameters**
+
+You can also pass executors directly as method parameters without code generation:
+
+```rust
+#[repo]
+trait UserRepo {
+    // Method with explicit pool parameter
+    #[dml("SELECT * FROM users WHERE id = ?")]
+    async fn find_by_id_with_pool(&self, id: i64, pool: &Pool) -> Result<User>;
+
+    // Method with transaction parameter
+    #[dml("SELECT * FROM users WHERE id = ?")]
+    async fn find_by_id_with_tx(&self, id: i64, tx: &mut Transaction<'_>) -> Result<User>;
+
+    // Method with connection parameter
+    #[dml("SELECT * FROM users WHERE id = ?")]
+    async fn find_by_id_with_conn(&self, id: i64, conn: &mut Connection) -> Result<User>;
+
+    // Generic executor support
+    #[dml("INSERT INTO users (name) VALUES (?)")]
+    async fn create_user<'e, E>(&self, name: String, executor: impl Executor<'_>) -> Result<QueryResult>;
+}
+
+// Usage
+let user = repo.find_by_id_with_pool(1, &pool).await?;
+let user = repo.find_by_id_with_tx(2, &mut tx).await?;
+let user = repo.find_by_id_with_conn(3, &mut conn).await?;
+repo.create_user("Alice".into(), &pool).await?;  // Works with any executor
 ```
 
 ---
@@ -833,6 +855,8 @@ trait UserRepo {
 
 - [`hello-world`](examples/hello-world) — A minimal setup to get started.
 - [`axum-crud-api`](examples/axum-crud-api) — A full-featured REST API using Axum, showcasing pagination, filtering, and best practices.
+
+**📖 Documentation Book** - [Comprehensive guide](book/src) (under construction)
 
 ---
 
