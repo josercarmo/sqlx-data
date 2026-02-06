@@ -153,17 +153,17 @@ SQLx-Data uses feature flags to enable database and type support. **You must spe
 ```toml
 # For SQLite with JSON
 [dependencies]
-sqlx-data = { version = "0.1.3", features = ["sqlite", "json"] }
+sqlx-data = { version = "0.1.4", features = ["sqlite", "json"] }
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "macros", "migrate"] }
 
 # For PostgreSQL with multiple types
 [dependencies]
-sqlx-data = { version = "0.1.3", features = ["postgres", "json", "chrono", "uuid"] }
+sqlx-data = { version = "0.1.4", features = ["postgres", "json", "chrono", "uuid"] }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "macros", "migrate"] }
 
 # For MySQL with tracing
 [dependencies]
-sqlx-data = { version = "0.1.3", features = ["mysql", "json", "tracing"] }
+sqlx-data = { version = "0.1.4", features = ["mysql", "json", "tracing"] }
 sqlx = { version = "0.8", features = ["mysql", "runtime-tokio", "macros", "migrate"] }
 ```
 
@@ -173,7 +173,7 @@ sqlx = { version = "0.8", features = ["mysql", "runtime-tokio", "macros", "migra
 
 ```toml
 [dependencies]
-sqlx-data = { version = "0.1.3", features = ["sqlite","json"] }
+sqlx-data = { version = "0.1.4", features = ["sqlite","json"] }
 sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio"] }
 tokio = { version = "1", features = ["full"] }
 ```
@@ -322,12 +322,12 @@ trait FeedRepo {
 // Initial Request:
 let params = ParamsBuilder::new()
     .cursor()
-        .limit(10)
-        .after("id", 0) // Start from beginning
+        .first_page()   // Start from beginning
         .done()
     .sort()
         .desc("id")     // Critical: Cursor relies on stable sorting
         .done()
+    .limit(10)          // Set limit on ParamsBuilder
     .build();
 
 let page = repo.user_feed(params).await?;
@@ -336,12 +336,12 @@ let page = repo.user_feed(params).await?;
 if let Some(next_cursor) = page.next_cursor {
     let next_params = ParamsBuilder::new()
         .cursor()
-            .limit(10)
             .next_cursor::<Post>(&next_cursor) // Type-safe continuation
             .done()
         .sort()
             .desc("id")
             .done()
+        .limit(10)          // Set limit on ParamsBuilder
         .build();
         
     let next_page = repo.user_feed(next_params).await?;
