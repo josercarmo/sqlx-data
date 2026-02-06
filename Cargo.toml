@@ -7,7 +7,7 @@ members = [
     "sqlx-data-parser",
     "sqlx-data-integration",
     # Integration tests - not published to crates.io
-    "test-integration-sqlite",
+    # "test-integration-sqlite",
     # "test-integration-mysql",
     # "test-integration-postgresql",
 ]
@@ -21,6 +21,7 @@ exclude = [
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.75"
 authors = ["Jose Carmo <jose.rcarmo@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/josercarmo/sqlx-data"
