@@ -6,8 +6,8 @@ use sqlx_data_integration::{
 
 // Import all types from sqlx_data_integration
 use sqlx_data_integration::{
-    BString, BitVec, Date, DateTime, Decimal, IpNet, IpNetwork,
-    MacAddress, NaiveDate, NaiveDateTime, NaiveTime, PrimitiveDateTime, Time, Uuid,
+    BString, BitVec, Date, DateTime, Decimal, IpNet, IpNetwork, MacAddress, NaiveDate,
+    NaiveDateTime, NaiveTime, PrimitiveDateTime, Time, Uuid,
 };
 
 // Local type alias to resolve Json generic
@@ -188,7 +188,7 @@ where
             // UUID support - native types
             #[cfg(feature = "uuid")]
             FilterValue::Uuid(uuid) => uuid.encode_by_ref(args),
-           
+
             // Chrono DateTime support
             #[cfg(feature = "chrono")]
             FilterValue::DateTimeChrono(dt) => dt.encode_by_ref(args),
@@ -208,6 +208,15 @@ where
             FilterValue::Date(date) => date.encode_by_ref(args),
             #[cfg(all(feature = "time", not(feature = "chrono")))]
             FilterValue::Time(time) => time.encode_by_ref(args),
+
+            #[cfg(all(feature = "jiff", not(feature = "chrono"), not(feature = "time")))]
+            FilterValue::DateTimeJiff(dt) => dt.encode_by_ref(args),
+            #[cfg(all(feature = "jiff", not(feature = "chrono"), not(feature = "time")))]
+            FilterValue::NaiveDateTime(ndt) => ndt.encode_by_ref(args),
+            #[cfg(all(feature = "jiff", not(feature = "chrono"), not(feature = "time")))]
+            FilterValue::NaiveDate(nd) => nd.encode_by_ref(args),
+            #[cfg(all(feature = "jiff", not(feature = "chrono"), not(feature = "time")))]
+            FilterValue::NaiveTime(nt) => nt.encode_by_ref(args),
 
             // Decimal support
             #[cfg(feature = "rust_decimal")]

@@ -97,20 +97,63 @@ pub mod database {
     #[cfg(all(feature = "time", not(feature = "chrono")))]
     pub type NaiveTime = sqlx::types::time::Time;
 
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type DateTime = jiff_sqlx::Timestamp;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveDateTime = jiff_sqlx::DateTime;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveDate = jiff_sqlx::Date;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveTime = jiff_sqlx::Time;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type PrimitiveDateTime = jiff_sqlx::DateTime;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type Date = jiff_sqlx::Date;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type Time = jiff_sqlx::Time;
+
     // Fallbacks (plain TEXT)
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type DateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveDateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveDate = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type PrimitiveDateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type Date = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type Time = String;
 
     // ---------------------------------------------------------------------------------------------
@@ -247,20 +290,63 @@ pub mod database {
     #[cfg(all(feature = "time", not(feature = "chrono")))]
     pub type NaiveTime = sqlx::types::time::Time;
 
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type DateTime = jiff_sqlx::Timestamp;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveDateTime = jiff_sqlx::DateTime;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveDate = jiff_sqlx::Date;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type NaiveTime = jiff_sqlx::Time;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type PrimitiveDateTime = jiff_sqlx::DateTime;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type Date = jiff_sqlx::Date;
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    pub type Time = jiff_sqlx::Time;
+
     // Fallbacks (plain TEXT)
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type DateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveDateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveDate = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type NaiveTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type PrimitiveDateTime = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type Date = String;
-    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    #[cfg(not(any(feature = "chrono", feature = "time", feature = "jiff")))]
     pub type Time = String;
 
     // ---------------- DECIMAL ----------------
