@@ -11,6 +11,8 @@ categories = ["database"]
 
 [dependencies]
 sqlx = { workspace = true, optional = true }
+jiff-sqlx = { workspace = true, optional = true }
+jiff = { workspace = true, optional = true }
 
 [dev-dependencies]
 
@@ -18,8 +20,8 @@ sqlx = { workspace = true, optional = true }
 default = []
 
 # Database features
-sqlite = ["dep:sqlx", "sqlx/sqlite"]
-postgres = ["dep:sqlx", "sqlx/postgres"]
+sqlite = ["dep:sqlx", "sqlx/sqlite", "jiff-sqlx?/sqlite"]
+postgres = ["dep:sqlx", "sqlx/postgres", "jiff-sqlx?/postgres"]
 mysql = ["dep:sqlx", "sqlx/mysql"]
 
 # Type features
@@ -27,6 +29,9 @@ uuid = ["sqlx?/uuid"]
 json = ["sqlx?/json"]
 chrono = ["sqlx?/chrono"]
 time = ["sqlx?/time"]
+# Types come from jiff-sqlx; enable `postgres` and/or `sqlite` for Encode/Decode on that backend.
+# Direct `jiff` dep ensures the `std` feature is enabled (see workspace `jiff` dependency note).
+jiff = ["dep:jiff-sqlx", "dep:jiff"]
 bigdecimal = ["sqlx?/bigdecimal"]
 rust_decimal = ["sqlx?/rust_decimal"]
 bit-vec = ["sqlx?/bit-vec"]

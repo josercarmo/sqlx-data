@@ -288,6 +288,8 @@ impl TypeAnalyzer {
                 "NaiveTime",
                 "PrimitiveDateTime",
                 "OffsetDateTime",
+                "Timestamp",
+                "Span",
                 "MacAddress",
                 "Blob",
                 "IpNet",
@@ -967,6 +969,8 @@ mod tests {
             TypeAnalyzer::is_scalar(&parse_quote!(sqlx::types::chrono::NaiveDateTime)).unwrap()
         );
         assert!(TypeAnalyzer::is_scalar(&parse_quote!(chrono::NaiveDate)).unwrap());
+        assert!(TypeAnalyzer::is_scalar(&parse_quote!(jiff_sqlx::Timestamp)).unwrap());
+        assert!(TypeAnalyzer::is_scalar(&parse_quote!(jiff_sqlx::DateTime)).unwrap());
         assert!(TypeAnalyzer::is_scalar(&parse_quote!(::std::primitive::i64)).unwrap());
 
         // Non-scalar types - should return false

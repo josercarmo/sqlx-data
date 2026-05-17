@@ -48,6 +48,10 @@ dashmap = "6.1"
 ahash = "0.8"
 futures = { version = "0.3" }
 thiserror = "2.0.17"
+# jiff-sqlx on crates.io depends on jiff with default-features = false but still uses `?` into
+# `Box<dyn std::error::Error>`; enabling `std` on jiff restores `std::error::Error` for `jiff::Error`.
+jiff = { version = "0.2.24", default-features = false, features = ["std"] }
+jiff-sqlx = { version = "0.1.1", default-features = false }
 sqlx-data = { version = "0.1.0", path = "sqlx-data" }
 sqlx-data-params = { version = "0.1.0", path = "sqlx-data-params" }
 sqlx-data-parser = { version = "0.1.0", path = "sqlx-data-parser" }

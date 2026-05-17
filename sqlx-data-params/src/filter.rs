@@ -69,6 +69,31 @@ pub enum FilterValue {
     #[cfg(all(feature = "time", not(feature = "chrono")))]
     Time(sqlx_data_integration::Time),
 
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    DateTimeJiff(sqlx_data_integration::DateTime),
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    NaiveDateTime(sqlx_data_integration::NaiveDateTime),
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    NaiveDate(sqlx_data_integration::NaiveDate),
+    #[cfg(all(
+        feature = "jiff",
+        not(feature = "chrono"),
+        not(feature = "time")
+    ))]
+    NaiveTime(sqlx_data_integration::NaiveTime),
+
     // Decimal/Money support with SQLx re-exported types
     #[cfg(feature = "rust_decimal")]
     Decimal(sqlx_data_integration::Decimal),
@@ -356,6 +381,50 @@ impl From<sqlx_data_integration::Date> for FilterValue {
 impl From<sqlx_data_integration::Time> for FilterValue {
     fn from(value: sqlx_data_integration::Time) -> Self {
         FilterValue::Time(value)
+    }
+}
+
+#[cfg(all(
+    feature = "jiff",
+    not(feature = "chrono"),
+    not(feature = "time")
+))]
+impl From<sqlx_data_integration::DateTime> for FilterValue {
+    fn from(value: sqlx_data_integration::DateTime) -> Self {
+        FilterValue::DateTimeJiff(value)
+    }
+}
+
+#[cfg(all(
+    feature = "jiff",
+    not(feature = "chrono"),
+    not(feature = "time")
+))]
+impl From<sqlx_data_integration::NaiveDateTime> for FilterValue {
+    fn from(value: sqlx_data_integration::NaiveDateTime) -> Self {
+        FilterValue::NaiveDateTime(value)
+    }
+}
+
+#[cfg(all(
+    feature = "jiff",
+    not(feature = "chrono"),
+    not(feature = "time")
+))]
+impl From<sqlx_data_integration::NaiveDate> for FilterValue {
+    fn from(value: sqlx_data_integration::NaiveDate) -> Self {
+        FilterValue::NaiveDate(value)
+    }
+}
+
+#[cfg(all(
+    feature = "jiff",
+    not(feature = "chrono"),
+    not(feature = "time")
+))]
+impl From<sqlx_data_integration::NaiveTime> for FilterValue {
+    fn from(value: sqlx_data_integration::NaiveTime) -> Self {
+        FilterValue::NaiveTime(value)
     }
 }
 
